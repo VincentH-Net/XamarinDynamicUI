@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Xamarin.Forms;
 
 namespace Xamarin.Forms.Markup
 {
@@ -28,6 +29,24 @@ namespace Xamarin.Forms.Markup
 		{ layout.Spacing = spacing; return layout; }
     }
 
+	public static class Extensions
+    {
+		public static TFrame CornerRadius<TFrame>(this TFrame frame, float radius) where TFrame : Frame
+		{ frame.CornerRadius = radius; return frame; }
+
+		public static TStackLayout Horizontal<TStackLayout>(this TStackLayout stackLayout) where TStackLayout : StackLayout
+		{ stackLayout.Orientation = StackOrientation.Horizontal; return stackLayout; }
+
+		public static TStackLayout Vertical<TStackLayout>(this TStackLayout stackLayout) where TStackLayout : StackLayout
+		{ stackLayout.Orientation = StackOrientation.Vertical; return stackLayout; }
+
+		public static TVisualElement Color<TVisualElement>(this TVisualElement element, Color color) where TVisualElement : VisualElement
+		{ element.BackgroundColor = color; return element; }
+
+		public static TTextElement TextColor<TTextElement>(this TTextElement element, Color color) where TTextElement : Label // TODO: ITextElement
+		{ element.TextColor = color; return element; }
+	}
+
 	public static class Factory
     {
 		static TLayout AddChildren<TLayout>(this TLayout layout, params View[] views) where TLayout : Layout<View>
@@ -43,5 +62,9 @@ namespace Xamarin.Forms.Markup
 		public static StackLayout StackLayout(Type type) => new StackLayout().ItemTemplate (new DataTemplate(type));
 
 		public static Frame Frame(View content) => new Frame { Content = content };
-    }
+
+		public static Button Button(string text = null) => new Button { Text = text };
+
+		public static Label Label(string text = null) => new Label { Text = text };
+	}
 }
