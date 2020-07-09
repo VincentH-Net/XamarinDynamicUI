@@ -12,7 +12,8 @@ namespace XamlFlags
 
             InitializeComponent();
 
-            MainPage = new MainPage();
+            //MainPage = new MainPage();
+            MainPage = new MainPageCSharpMarkup();
         }
 
         protected override void OnStart()

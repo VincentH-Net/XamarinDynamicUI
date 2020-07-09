@@ -8,5 +8,6 @@ namespace XamlFlags
         public static readonly Color White = Color.White;
         public static readonly Color DarkBlue = Color.DarkBlue;
         public static readonly Color DarkGray = Color.DarkGray;
+        public static readonly Color LightGray = Color.LightGray;
     }
 }
