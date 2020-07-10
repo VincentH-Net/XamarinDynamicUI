@@ -59,8 +59,21 @@ namespace Xamarin.Forms.Markup // TODO: Complete and add to the appropriate clas
 		public static TTextElement TextColor<TTextElement>(this TTextElement element, Color color) where TTextElement : Label // TODO: ITextElement (is internal)
 		{ element.TextColor = color; return element; }
 
-		public static TBindable Bind<TBindable>(this BindPropertyChain<TBindable> chain, string path = ".", object source = null) where TBindable : BindableObject
+		public static TBindable Bind<TBindable>(
+			this BindPropertyChain<TBindable> chain,
+			string path = ".",
+			object source = null
+		) where TBindable : BindableObject
 		{ chain.Parent.Bind(chain.Property, path: path, source: source); return chain.Parent; }
+
+		public static TBindable Bind<TBindable, TSource, TDest>(
+			this BindPropertyChain<TBindable> chain,
+			string path = ".",
+			Func<TSource, TDest> convert = null, 
+			Func<TDest, TSource> convertBack = null, 
+			object source = null
+		) where TBindable : BindableObject
+		{ chain.Parent.Bind(chain.Property, path: path, convert: convert, convertBack: convertBack, source: source); return chain.Parent; }
 
 		/// <summary>Bind to a specified property with 2 bindings and an inline convertor</summary>
 		public static TBindable MultiBind<TBindable, TSource1, TSource2, TDest>(
@@ -211,7 +224,7 @@ namespace Xamarin.Forms.Markup // TODO: Complete and add to the appropriate clas
 		}
 	}
 
-	// TODO: consider if we need this or if a short way to create a converter is enough. Can we do that automatically with a type convertor, a tuple of functions?
+	// TODO: Consider whether we need this class or whether a short way to create a converter is enough - possibly automatically with a type convertor, a tuple of functions?
 	public class Func2Converter<TSource1, TSource2, TDest> : FuncMultiConverter<TDest, object>
 	{
 		static T To<T>(object value) => value != null ? (T)value : default(T);
