@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.Dynamic;
 using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography;
-using Xamarin.Forms;
 
-namespace Xamarin.Forms.Markup
+namespace Xamarin.Forms.Markup // TODO: Complete and add to the appropriate classes in Forms & MAUI
 {
     public static class LayoutExtensions
     {
+		// Layout<View> extensions
 		public static TLayout EmptyView<TLayout>(this TLayout layout, object view) where TLayout : Layout<View>
 		{ BindableLayout.SetEmptyView(layout, view); return layout; }
 
@@ -25,7 +22,7 @@ namespace Xamarin.Forms.Markup
 		public static TLayout ItemTemplateSelector<TLayout>(this TLayout layout, DataTemplateSelector selector) where TLayout : Layout<View>
 		{ BindableLayout.SetItemTemplateSelector(layout, selector); return layout; }
 
-
+		// StackLayout extensions
 		public static TLayout Orientation<TLayout>(this TLayout layout, StackOrientation orientation) where TLayout : StackLayout
 		{ layout.Orientation = orientation; return layout; }
 
@@ -34,7 +31,7 @@ namespace Xamarin.Forms.Markup
     }
 
 	public static class Extensions
-    {
+	{
 		public static TFrame CornerRadius<TFrame>(this TFrame frame, float radius) where TFrame : Frame
 		{ frame.CornerRadius = radius; return frame; }
 
@@ -47,36 +44,55 @@ namespace Xamarin.Forms.Markup
 		public static TVisualElement Color<TVisualElement>(this TVisualElement element, Color color) where TVisualElement : VisualElement
 		{ element.BackgroundColor = color; return element; }
 
-		public static TTextElement TextColor<TTextElement>(this TTextElement element, Color color) where TTextElement : Label // TODO: ITextElement
+		public static BindPropertyChain<TVisualElement> Color<TVisualElement>(this TVisualElement element) where TVisualElement : VisualElement
+		=> new BindPropertyChain<TVisualElement>(element, VisualElement.BackgroundColorProperty);
+
+		public static BindPropertyChain<TVisualElement> IsEnabled<TVisualElement>(this TVisualElement element) where TVisualElement : VisualElement
+		=> new BindPropertyChain<TVisualElement>(element, VisualElement.IsEnabledProperty);
+
+		public static BindPropertyChain<TVisualElement> IsVisible<TVisualElement>(this TVisualElement element) where TVisualElement : VisualElement
+		=> new BindPropertyChain<TVisualElement>(element, VisualElement.IsVisibleProperty);
+
+		public static BindPropertyChain<TLabel> TextColor<TLabel>(this TLabel label) where TLabel : Label
+		=> new BindPropertyChain<TLabel>(label, Label.TextColorProperty);
+
+		public static TTextElement TextColor<TTextElement>(this TTextElement element, Color color) where TTextElement : Label // TODO: ITextElement (is internal)
 		{ element.TextColor = color; return element; }
 
-		// MultiBind starts a fluent subchain. Convert starts another subchain, which takes one binding for each parameter. that adds bindings to the multibind
-		// MultiBind(...).Convert<TSource1, TSource2, TDest>(
-		//  binding1,
-		//  binding2,
-		//	((TSource1 v1, TSource2 v2) values) => default(TDest),
-		//	(TDest value) => (TSource1 v1, TSource2 v2) values) => default(TDest),
-		// )
-
-		// TODO: In Bind, make converterParameter  TParam instead of object
+		public static TBindable Bind<TBindable>(this BindPropertyChain<TBindable> chain, string path = ".", object source = null) where TBindable : BindableObject
+		{ chain.Parent.Bind(chain.Property, path: path, source: source); return chain.Parent; }
 
 		/// <summary>Bind to a specified property with 2 bindings and an inline convertor</summary>
 		public static TBindable MultiBind<TBindable, TSource1, TSource2, TDest>(
-			this TBindable bindable,
-			BindableProperty targetProperty,
+			this BindPropertyChain<TBindable> chain,
 			BindingBase binding1,
 			BindingBase binding2,
 			Func<ValueTuple<TSource1, TSource2>, TDest> convert = null,
 			Func<TDest, ValueTuple<TSource1, TSource2>> convertBack = null,
-			//object converterParameter = null,
+			BindingMode mode = BindingMode.Default,
+			string stringFormat = null,
+			object targetNullValue = null,
+			object fallbackValue = null
+		) where TBindable : BindableObject
+		=> MultiBind<TBindable, TSource1, TSource2, object, TDest>(
+			   chain, binding1, binding2, convert, convertBack, null, mode, stringFormat, targetNullValue, fallbackValue
+		   );
 
+		/// <summary>Bind to a specified property with 2 bindings, an inline convertor and a converter parameter</summary>
+		public static TBindable MultiBind<TBindable, TSource1, TSource2, TParam, TDest>(
+			this BindPropertyChain<TBindable> chain,
+			BindingBase binding1,
+			BindingBase binding2,
+			Func<ValueTuple<TSource1, TSource2>, TDest> convert = null,
+			Func<TDest, ValueTuple<TSource1, TSource2>> convertBack = null,
+			TParam converterParameter = default(TParam),
 			BindingMode mode = BindingMode.Default,
 			string stringFormat = null,
 			object targetNullValue = null,
 			object fallbackValue = null
 		) where TBindable : BindableObject
 		{
-			bindable.SetBinding(targetProperty, new MultiBinding {
+			chain.Parent.SetBinding(chain.Property, new MultiBinding {
 				Bindings = { binding1, binding2 },
 				Converter = new Func2Converter<TSource1, TSource2, TDest>(convert, convertBack),
 				Mode = mode,
@@ -84,80 +100,15 @@ namespace Xamarin.Forms.Markup
 				TargetNullValue = targetNullValue,
 				FallbackValue = fallbackValue
 			});
-			return bindable;
+			return chain.Parent;
 		}
 
-		//public static TBindable Bind<TBindable, TSource1, TSource2, TDest>(
-		//	this MultiBindChain<TBindable> chain,
-		//	BindingBase binding1,
-		//	BindingBase binding2,
-		//	Func<ValueTuple<TSource1, TSource2>, TDest> convert = null,
-		//	Func<TDest, ValueTuple<TSource1, TSource2>> convertBack = null,
-		//	object converterParameter = null
-		//) where TBindable : BindableObject
-		//{
-		//	chain.MultiBinding.Bindings.Add(binding1);
-		//	chain.MultiBinding.Bindings.Add(binding2);
-		//	chain.MultiBinding.Converter = new Func2Converter<TSource1, TSource2, TDest>(convert, convertBack);
-		//	chain.Parent.SetBinding(targetProperty, multiBinding);
-		//	return chain.Parent;
-		//}
+		public class BindPropertyChain<TBindableObject> : Subchain<TBindableObject, BindableProperty> where TBindableObject : BindableObject
+		{
+			public readonly BindableProperty Property;
 
-		//public class MultiBindChain<TParent> : Subchain<TParent, MultiBinding> where TParent : BindableObject
-		//{
-		//	public MultiBinding MultiBinding { get; }
-
-  //          public MultiBindChain(TParent parent, MultiBinding multiBinding) : base(parent) { MultiBinding = multiBinding; }
-  //      }
-
-		///// <summary>Bind to a specified property with inline conversion</summary>
-		//public static TBindable Multi<TBindable, TSource, TDest>(
-		//	this TBindable bindable,
-		//	BindableProperty targetProperty,
-		//	Func<TSource, TDest> convert = null,
-		//	Func<TDest, TSource> convertBack = null,
-		//	object converterParameter = null,
-		//	BindingMode mode = BindingMode.Default,
-		//	string stringFormat = null,
-		//	object targetNullValue = null,
-		//	object fallbackValue = null
-		//) where TBindable : BindableObject
-		//{
-		//	var converter = new FuncConverter<TSource, TDest, object>(convert, convertBack);
-		//	bindable.SetBinding(
-		//		targetProperty,
-		//		new Binding(path, mode, converter, converterParameter, stringFormat, source)
-		//		{
-		//			TargetNullValue = targetNullValue,
-		//			FallbackValue = fallbackValue
-		//		});
-		//	return bindable;
-		//}
-
-		///// <summary>Bind to a specified property with inline conversion and conversion parameter</summary>
-		//public static TBindable Multi<TBindable, TSource, TParam, TDest>(
-		//	this TBindable bindable,
-		//	BindableProperty targetProperty,
-		//	Func<TSource, TParam, TDest> convert = null,
-		//	Func<TDest, TParam, TSource> convertBack = null,
-		//	object converterParameter = null,
-		//	BindingMode mode = BindingMode.Default,
-		//	string stringFormat = null,
-		//	object targetNullValue = null,
-		//	object fallbackValue = null
-		//) where TBindable : BindableObject
-		//{
-		//	var converter = new FuncConverter<TSource, TDest, TParam>(convert, convertBack);
-		//	bindable.SetBinding(
-		//		targetProperty,
-		//		new Binding(path, mode, converter, converterParameter, stringFormat, source)
-		//		{
-		//			TargetNullValue = targetNullValue,
-		//			FallbackValue = fallbackValue
-		//		});
-		//	return bindable;
-		//}
-
+			public BindPropertyChain(TBindableObject parent, BindableProperty property) : base(parent) { Property = property; }
+		}
 	}
 
 	public class Subchain<TParent, TChild> where TParent : class
@@ -188,10 +139,8 @@ namespace Xamarin.Forms.Markup
 
 		public static Label Label(string text = null) => new Label { Text = text };
 
-		const string bindingContextPath = ".";
-
 		public static Binding Binding(
-			string path = bindingContextPath,
+			string path = ".",
 			BindingMode mode = BindingMode.Default,
 			IValueConverter converter = null,
 			object converterParameter = null,
@@ -201,8 +150,6 @@ namespace Xamarin.Forms.Markup
 			object fallbackValue = null
 		) => new Binding (path, mode, converter, converterParameter, stringFormat, source) { TargetNullValue = targetNullValue, FallbackValue = fallbackValue };
 	}
-
-	// TODO: In FuncConverter Convert, when no conversion is possible return BindableProperty.UnsetValue to use the binding FallbackValue (instead of returning default(TDest))
 
 	public class FuncMultiConverter<TDest, TParam> : IMultiValueConverter
 	{
@@ -264,16 +211,17 @@ namespace Xamarin.Forms.Markup
 		}
 	}
 
-	// TODO: consider if we need this or if a short way to create a converter is enough. Can we to that automatically with a type convertor, a tuple of functions?
+	// TODO: consider if we need this or if a short way to create a converter is enough. Can we do that automatically with a type convertor, a tuple of functions?
 	public class Func2Converter<TSource1, TSource2, TDest> : FuncMultiConverter<TDest, object>
 	{
+		static T To<T>(object value) => value != null ? (T)value : default(T);
 		static object[] ToObjects(ValueTuple<TSource1, TSource2> values) => new object[] { values.Item1, values.Item2 };
 
 		public Func2Converter(
 			Func<ValueTuple<TSource1, TSource2>, TDest> convert = null, 
 			Func<TDest, ValueTuple<TSource1, TSource2>> convertBack = null)
 		: base (
-			convert     == null ? default(Func<object[], TDest>) : (object[] values) => convert((values[0] != null ? (TSource1)values[0] : default(TSource1), values[1] != null ? (TSource2)values[1] : default(TSource2) )),
+			convert     == null ? default(Func<object[], TDest>) : (object[] values) => convert((To<TSource1>(values[0]), To<TSource2>(values[1]))),
 			convertBack == null ? default(Func<TDest, object[]>) : (TDest value)     => ToObjects(convertBack(value))
 		) { }
 	}
