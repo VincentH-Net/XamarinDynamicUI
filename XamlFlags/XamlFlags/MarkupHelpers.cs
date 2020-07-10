@@ -140,11 +140,17 @@ namespace Xamarin.Forms.Markup // TODO: Complete and add to the appropriate clas
 			return layout;
         }
 
-		public static StackLayout StackLayout(params View[] views) => new StackLayout().AddChildren(views);
+		public static StackLayout HStack(params View[] views) => new StackLayout { } .Horizontal () .AddChildren(views);
 
-		public static StackLayout StackLayout(Func<object> loadTemplate) => new StackLayout().ItemTemplate(new DataTemplate(loadTemplate));
+		public static StackLayout HStack(Func<object> loadTemplate) => new StackLayout { } .Horizontal () .ItemTemplate(new DataTemplate(loadTemplate));
 
-		public static StackLayout StackLayout(Type type) => new StackLayout().ItemTemplate (new DataTemplate(type));
+		public static StackLayout HStack(Type type) => new StackLayout { } .Horizontal () .ItemTemplate (new DataTemplate(type));
+
+		public static StackLayout VStack(params View[] views) => new StackLayout { }.AddChildren(views);
+
+		public static StackLayout VStack(Func<object> loadTemplate) => new StackLayout { } .ItemTemplate(new DataTemplate(loadTemplate));
+
+		public static StackLayout VStack(Type type) => new StackLayout { } .ItemTemplate (new DataTemplate(type));
 
 		public static Frame Frame(View content) => new Frame { Content = content };
 

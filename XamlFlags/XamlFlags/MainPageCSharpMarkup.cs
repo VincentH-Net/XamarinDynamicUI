@@ -6,36 +6,36 @@ using Option = XamlFlags.OptionViewModel;
 
 namespace XamlFlags
 {
-    // This is the most straightforward implementation of MainPage in C#. 
-    // It uses Fody PropertyChanged to automatically make calculated properties data bindable.
+    // This is the most straightforward implementation of MainPage in C# Markup,
+    // using Fody PropertyChanged to automatically make calculated properties data bindable.
 
     partial class MainPageCSharpMarkup
     {
         void Build() => Content = 
-            StackLayout(() => Frame (
-                StackLayout (
-                    Button ("Select")
-                        .BindCommand (nameof(vm.SelectTypeCommand), source: vm),
+            VStack (() => 
+                Frame (
+                    HStack (
+                        Button ("Select")
+                           .BindCommand (nameof(vm.SelectTypeCommand), source: vm),
 
-                    Label ("✓")
-                        .TextColor (White) .FontSize (12)
-                        .EndExpand () .CenterVertical ()
-                        .IsVisible().Bind (nameof(Option.IsSelected)),
+                        Label ("✓")
+                           .TextColor (White) .FontSize (12)
+                           .EndExpand () .CenterVertical ()
+                           .IsVisible().Bind (nameof(Option.IsSelected)),
 
-                    Label ()
-                        .TextColor (Black)
-                        .EndExpand () .CenterVertical ()
-                        .Bind (nameof(Option.Value))
-                        .TextColor().Bind(nameof(Option.TextColor))
+                        Label ()
+                           .TextColor().Bind (nameof(Option.TextColor))
+                           .EndExpand () .CenterVertical ()
+                           .Bind (nameof(Option.Value))
 
-                )  .Horizontal() .Padding (5)
-                   .IsEnabled().Bind (nameof(Option.IsEnabled))
-                   .Color().Bind (nameof(Option.BackgroundColor))
-            )  .CornerRadius (4) .Padding (0)
+                    )  .Color().Bind (nameof(Option.BackgroundColor))
+                       .Horizontal() .Padding (5)
+                       .IsEnabled().Bind (nameof(Option.IsEnabled))
+                )  .CornerRadius (4) .Padding (0)
         )  .ItemsSource (vm.Options);
     }
 
-    public partial class OptionViewModel
+    partial class OptionViewModel
     {
         public Color TextColor       => IsEnabled ? (IsSelected ? White    : Black) : LightGray;
         public Color BackgroundColor => IsEnabled ? (IsSelected ? DarkBlue : White) : DarkGray;

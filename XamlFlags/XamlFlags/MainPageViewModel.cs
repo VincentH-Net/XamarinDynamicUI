@@ -12,7 +12,7 @@ namespace XamlFlags
     public class MainPageViewModel : BindableBase
     {
         public ICommand SelectTypeCommand { get; }
-        public List<OptionViewModel> Options { get; } = new List<OptionViewModel>
+        internal List<OptionViewModel> Options { get; } = new List<OptionViewModel>
         {
             new OptionViewModel { Value = "Option 1-A", Category = "1", Variety = "A" },
             new OptionViewModel { Value = "Option 1-B", Category = "1", Variety = "B" },
@@ -48,7 +48,7 @@ namespace XamlFlags
         }
     }
 
-    public partial class OptionViewModel : BindableBase
+    partial class OptionViewModel : BindableBase
     {
         public string Value { get; set; }
         public string Variety { get; set; }

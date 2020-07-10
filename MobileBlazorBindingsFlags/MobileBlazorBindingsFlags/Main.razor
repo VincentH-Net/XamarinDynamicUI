@@ -7,13 +7,16 @@
                              BackgroundColor="(option.IsEnabled ? (option.IsSelected ? Color.DarkBlue : Color.White) : Color.DarkGray)"
                              IsEnabled="option.IsEnabled">
                     <Button Text="Select" OnClick="(() => OnSelectType(option))" />
+
                     <Label Text="✓"
                            TextColor="Color.White"
                            FontSize="12"
                            VerticalOptions="LayoutOptions.Center" HorizontalOptions="LayoutOptions.EndAndExpand"
                            IsVisible="option.IsSelected" />
+
                     <Label Text="@option.Value" VerticalOptions="LayoutOptions.Center" HorizontalOptions="LayoutOptions.EndAndExpand"
                            TextColor="(option.IsEnabled ? (option.IsSelected ? Color.White : Color.Black) : Color.LightGray)" />
+
                 </StackLayout>
             </Frame>
         }
