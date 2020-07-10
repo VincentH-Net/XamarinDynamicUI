@@ -6,12 +6,11 @@ using Option = XamlFlags.OptionViewModel;
 
 namespace XamlFlags
 {
-    // This is the most straightforward implementation of MainPage in C#. 
-    // It uses Fody PropertyChanged to automatically make calculated properties data bindable.
+    // This is an alternative implementation of MainPage, using MultiBindings instead of Fody PropertyChanged
 
     partial class MainPageCSharpMarkup
     {
-        void Build() => Content = 
+        void BuildWithMultiBindings() => Content = 
             StackLayout(() => Frame (
                 StackLayout (
                     Button ("Select")
@@ -26,19 +25,21 @@ namespace XamlFlags
                         .TextColor (Black)
                         .EndExpand () .CenterVertical ()
                         .Bind (nameof(Option.Value))
-                        .TextColor().Bind(nameof(Option.TextColor))
+                        .TextColor().MultiBind (
+                            Binding (nameof(Option.IsEnabled)), 
+                            Binding (nameof(Option.IsSelected)), 
+                            ((bool isEnabled, bool isSelected) option)
+                            => option.isEnabled ? (option.isSelected ? White : Black) : LightGray)
 
-                )  .Horizontal() .Padding (5)
-                   .IsEnabled().Bind (nameof(Option.IsEnabled))
-                   .Color().Bind (nameof(Option.BackgroundColor))
-            )  .CornerRadius (4) .Padding (0)
-        )  .ItemsSource (vm.Options);
-    }
-
-    public partial class OptionViewModel
-    {
-        public Color TextColor       => IsEnabled ? (IsSelected ? White    : Black) : LightGray;
-        public Color BackgroundColor => IsEnabled ? (IsSelected ? DarkBlue : White) : DarkGray;
+                ) .Horizontal() .Padding (5)
+                    .IsEnabled().Bind (nameof(Option.IsEnabled))
+                    .Color().MultiBind (
+                        Binding (nameof(Option.IsEnabled)), 
+                        Binding (nameof(Option.IsSelected)), 
+                        ((bool isEnabled, bool isSelected) option)
+                        => option.isEnabled ? (option.isSelected ? DarkBlue : White) : DarkGray)
+            ) .CornerRadius (4) .Padding (0)
+        ) .ItemsSource (vm.Options);
     }
 
     // Note that in contrast to Blazor, which only updates in response to UI events, 
