@@ -29,7 +29,7 @@ namespace XamlFlags
                            .Bind (nameof(Option.Value))
 
                     )  .Color().Bind (nameof(Option.BackgroundColor))
-                       .Horizontal() .Padding (5)
+                       .Padding (5)
                        .IsEnabled().Bind (nameof(Option.IsEnabled))
                 )  .CornerRadius (4) .Padding (0)
         )  .ItemsSource (vm.Options);

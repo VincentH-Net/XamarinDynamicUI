@@ -11,84 +11,55 @@
         <BindableLayout.ItemTemplate>
             <DataTemplate>
                 <Frame CornerRadius="4" Padding="0">
-                    <StackLayout Orientation="Horizontal" Padding="5"
-                                    BackgroundColor="White">
+                    <StackLayout Orientation="Horizontal" Padding="5" BackgroundColor="White">
                         <StackLayout.Triggers>
-                            <DataTrigger TargetType="StackLayout"
-                                Binding="{Binding IsEnabled}"
-                                Value="false">
-                                <Setter Property="IsEnabled"
-                                        Value="false" />
+                            <DataTrigger TargetType="StackLayout" Binding="{Binding IsEnabled}" Value="false">
+                                <Setter Property="IsEnabled" Value="false" />
                             </DataTrigger>
                             <MultiTrigger TargetType="StackLayout">
                                 <MultiTrigger.Conditions>
-                                    <BindingCondition
-                                            Binding="{Binding IsEnabled}"
-                                            Value="false"/>
-                                    <BindingCondition
-                                        Binding="{Binding IsSelected}"
-                                        Value="false"/>
+                                    <BindingCondition Binding="{Binding IsEnabled}" Value="false"/>
+                                    <BindingCondition Binding="{Binding IsSelected}" Value="false"/>
                                 </MultiTrigger.Conditions>
-                                <Setter Property="BackgroundColor"
-                                        Value="DarkGray" />
+                                <Setter Property="BackgroundColor" Value="DarkGray" />
                             </MultiTrigger>
                             <MultiTrigger TargetType="StackLayout">
                                 <MultiTrigger.Conditions>
-                                    <BindingCondition
-                                            Binding="{Binding IsEnabled}"
-                                            Value="true"/>
-                                    <BindingCondition
-                                        Binding="{Binding IsSelected}"
-                                        Value="true"/>
+                                    <BindingCondition Binding="{Binding IsEnabled}" Value="true"/>
+                                    <BindingCondition Binding="{Binding IsSelected}" Value="true"/>
                                 </MultiTrigger.Conditions>
-                                <Setter Property="BackgroundColor"
-                                    Value="DarkBlue" />
+                                <Setter Property="BackgroundColor" Value="DarkBlue" />
                             </MultiTrigger>
                         </StackLayout.Triggers>
                         <Button Text="Select"
                                 Command="{Binding BindingContext.SelectTypeCommand, Source={x:Reference Page}}" 
                                 CommandParameter="{Binding .}"/>
                         <Label Text="✓"
-                                TextColor="White"
-                                FontSize="12"
-                                HorizontalOptions="EndAndExpand"
-                                VerticalOptions="Center">
+                               TextColor="White"
+                               FontSize="12"
+                               HorizontalOptions="EndAndExpand" VerticalOptions="Center">
                             <Label.Triggers>
-                                <DataTrigger TargetType="Label"
-                                                Binding="{Binding IsSelected}"
-                                                Value="False">
-                                    <Setter Property="IsVisible"
-                                            Value="False" />
+                                <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                    <Setter Property="IsVisible" Value="False" />
                                 </DataTrigger>
                             </Label.Triggers>
                         </Label>
                         <Label Text="{Binding Value}" TextColor="Black"
-                                HorizontalOptions="EndAndExpand"
-                                VerticalOptions="Center">
+                               HorizontalOptions="EndAndExpand" VerticalOptions="Center">
                             <Label.Triggers>
                                 <MultiTrigger TargetType="Label">
                                     <MultiTrigger.Conditions>
-                                        <BindingCondition
-                                                Binding="{Binding IsEnabled}"
-                                                Value="false"/>
-                                        <BindingCondition
-                                            Binding="{Binding IsSelected}"
-                                            Value="false"/>
+                                        <BindingCondition Binding="{Binding IsEnabled}" Value="false"/>
+                                        <BindingCondition Binding="{Binding IsSelected}" Value="false"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter Property="TextColor"
-                                        Value="LightGray" />
+                                    <Setter Property="TextColor" Value="LightGray" />
                                 </MultiTrigger>
                                 <MultiTrigger TargetType="Label">
                                     <MultiTrigger.Conditions>
-                                        <BindingCondition
-                                                Binding="{Binding IsEnabled}"
-                                                Value="true"/>
-                                        <BindingCondition
-                                            Binding="{Binding IsSelected}"
-                                            Value="true"/>
+                                        <BindingCondition Binding="{Binding IsEnabled}" Value="true"/>
+                                        <BindingCondition Binding="{Binding IsSelected}" Value="true"/>
                                     </MultiTrigger.Conditions>
-                                    <Setter Property="TextColor"
-                                        Value="White" />
+                                    <Setter Property="TextColor" Value="White" />
                                 </MultiTrigger>
                             </Label.Triggers>
                         </Label>
