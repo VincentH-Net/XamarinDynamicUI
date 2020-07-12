@@ -37,7 +37,7 @@ namespace XamlFlags
                             Binding (nameof(Option.IsSelected)), 
                             ((bool isEnabled, bool isSelected) option)
                             => option.isEnabled ? (option.isSelected ? DarkBlue : White) : DarkGray)
-                       .Horizontal() .Padding (5)
+                       .Padding (5)
                        .IsEnabled().Bind (nameof(Option.IsEnabled))
                 )  .CornerRadius (4) .Padding (0)
         )  .ItemsSource (vm.Options);
