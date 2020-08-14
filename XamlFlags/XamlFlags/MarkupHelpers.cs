@@ -32,6 +32,12 @@ namespace Xamarin.Forms.Markup // TODO: Complete and add to the appropriate clas
 
 	public static class Extensions
 	{
+		public static TListView ItemTemplate<TListView>(this TListView list, DataTemplate template) where TListView : ListView
+		{ list.ItemTemplate = template; return list; }
+
+		public static TListView ItemsSource<TListView>(this TListView list, IEnumerable source) where TListView : ListView
+		{ list.ItemsSource = source; return list; }
+
 		public static TFrame CornerRadius<TFrame>(this TFrame frame, float radius) where TFrame : Frame
 		{ frame.CornerRadius = radius; return frame; }
 
@@ -151,6 +157,8 @@ namespace Xamarin.Forms.Markup // TODO: Complete and add to the appropriate clas
 		public static StackLayout VStack(Func<object> loadTemplate) => new StackLayout { } .ItemTemplate(new DataTemplate(loadTemplate));
 
 		public static StackLayout VStack(Type type) => new StackLayout { } .ItemTemplate (new DataTemplate(type));
+
+		public static ListView ListView(Func<object> loadTemplate) => new ListView { } .ItemTemplate (new DataTemplate(loadTemplate));
 
 		public static Frame Frame(View content) => new Frame { Content = content };
 
